@@ -1,0 +1,111 @@
+#### general settings
+name: nafnet
+use_tb_logger: false
+use_wandb_logger: true
+model: denoising
+gpu_ids: [0, 1, 2, 3]
+training_noise_level: 15
+test_noise_level: [0]
+trans: false
+
+
+#### datasets
+datasets:
+    train:
+        optimizer: AdamW # Adam, AdamW, Lion
+        name: Train_Dataset
+        mode: LQGT
+        modes: ['Denoise', "Denoise_sidd"]
+        ratio: [0.5, 0.5]
+  
+        Denoise:
+            dataroot_GT: /131_data/datasets/Noise_dataset/BSD400_WED
+            dataroot_LQ: /131_data/datasets/Noise_dataset/BSD400_WED
+
+        Denoise_sidd:
+            dataroot_GT: /131_data/datasets/Noise_dataset/sidd/train/gt_crops
+            dataroot_LQ: /131_data/datasets/Noise_dataset/sidd/train/input_crops
+
+     
+
+        use_shuffle: true
+        n_workers: 4 # per GPU
+        batch_size: 32
+        GT_size: 256
+        LR_size: 256
+        use_flip: true
+        use_rot: true
+        color: RGB
+
+
+    val_sidd:
+        name: Sidd
+        mode: Denoise
+        Denoise:
+            dataroot_GT: /131_data/datasets/Noise_dataset/sidd/val/gt
+            dataroot_LQ: /131_data/datasets/Noise_dataset/sidd/val/input
+
+    val_poly:
+        name: Poly
+        mode: Denoise
+        Denoise:
+            dataroot_GT: /131_data/datasets/Noise_dataset/PolyU/gt
+            dataroot_LQ: /131_data/datasets/Noise_dataset/PolyU/input
+
+    val_cc:
+        name: CC
+        mode: Denoise
+        Denoise:
+            dataroot_GT: /131_data/datasets/Noise_dataset/CC15/gt
+            dataroot_LQ: /131_data/datasets/Noise_dataset/CC15/input
+
+
+#### network structures
+network_G:
+    which_model_G: NAFNet
+    setting:
+        width: 32
+        enc_blk_nums: [2, 2, 4, 8]
+        middle_blk_num: 12
+        dec_blk_nums: [2, 2, 2, 2]
+
+
+#### path
+path:
+    strict_load: true
+    resume_state: ~
+    root: '/131_data/dhryou/Noise_Translation'
+
+#### training settings: learning rate scheme, loss
+train:
+    optimizer: AdamW # Adam, AdamW, Lion
+    lr_G: !!float 1e-3
+    lr_scheme: TrueCosineAnnealingLR
+    beta1: 0.9
+    beta2: 0.99
+    niter: 200000
+    warmup_iter: -1 # no warm up
+    lr_steps: [200000, 400000, 500000]
+    lr_gamma: 0.5
+    eta_min: !!float 1e-7
+
+    # criterion
+    loss_type: l1
+    is_weighted: False
+    weight: 1.0
+    
+
+    use_mixup: false
+
+    manual_seed: 0
+    val_freq: !!float 5e3
+    image_log_freq: !!float 2e3
+
+#### logger
+logger:
+    print_freq: !!float 1e3
+    save_checkpoint_freq: !!float 2e4
+
+wandb:
+    project: Noise_Translation
+    resume_id: ~

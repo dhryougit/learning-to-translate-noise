@@ -1,0 +1,158 @@
+#### general settings
+name: nafnet_trans
+use_tb_logger: false
+use_wandb_logger: true
+model: denoising
+gpu_ids: [0, 1, 2, 3]
+training_noise_level: 15
+test_noise_level: [0]
+trans: true
+
+#### datasets
+datasets:
+    train:
+        optimizer: AdamW # Adam, AdamW, Lion
+        name: Train_Dataset
+        mode: LQGT
+        modes: ['Denoise_sidd']
+        ratio: [1.0]
+        Denoise_sidd:
+            dataroot_GT: /131_data/datasets/Noise_dataset/sidd/train/gt_crops
+            dataroot_LQ: /131_data/datasets/Noise_dataset/sidd/train/input_crops
+
+
+        use_shuffle: true
+        n_workers: 4 # per GPU
+        batch_size: 4
+        GT_size: 256
+        LR_size: 256
+        use_flip: true
+        use_rot: true
+        color: RGB
+
+    val_sidd:
+        name: Sidd
+        mode: Denoise
+        Denoise:
+            dataroot_GT: /131_data/datasets/Noise_dataset/sidd/val/gt
+            dataroot_LQ: /131_data/datasets/Noise_dataset/sidd/val/input
+
+    val_poly:
+        name: Poly
+        mode: Denoise
+        Denoise:
+            dataroot_GT: /131_data/datasets/Noise_dataset/PolyU/gt
+            dataroot_LQ: /131_data/datasets/Noise_dataset/PolyU/input
+
+    val_cc:
+        name: CC
+        mode: Denoise
+        Denoise:
+            dataroot_GT: /131_data/datasets/Noise_dataset/CC15/gt
+            dataroot_LQ: /131_data/datasets/Noise_dataset/CC15/input
+
+    val_highiso:
+        name: HighISO
+        mode: Denoise
+        Denoise:
+            dataroot_GT: /131_data/datasets/Noise_dataset/HighISO/clean
+            dataroot_LQ: /131_data/datasets/Noise_dataset/HighISO/noisy
+
+    val_iphone:
+        name: Iphone
+        mode: Denoise
+        Denoise:
+            dataroot_GT: /131_data/datasets/Noise_dataset/IOCI/IPHONE13/clean
+            dataroot_LQ: /131_data/datasets/Noise_dataset/IOCI/IPHONE13/noisy
+
+    val_huawei:
+        name: Huawei
+        mode: Denoise
+        Denoise:
+            dataroot_GT: /131_data/datasets/Noise_dataset/IOCI/HUAWEI_honor6X/clean
+            dataroot_LQ: /131_data/datasets/Noise_dataset/IOCI/HUAWEI_honor6X/noisy
+
+    val_oppo:
+        name: Oppo
+        mode: Denoise
+        Denoise:
+            dataroot_GT: /131_data/datasets/Noise_dataset/IOCI/OPPO_R11s/clean_png
+            dataroot_LQ: /131_data/datasets/Noise_dataset/IOCI/OPPO_R11s/noisy_png
+
+    val_sony:
+        name: Sony
+        mode: Denoise
+        Denoise:
+            dataroot_GT: /131_data/datasets/Noise_dataset/IOCI/SONY_A6500/clean_png
+            dataroot_LQ: /131_data/datasets/Noise_dataset/IOCI/SONY_A6500/noisy_png
+
+    val_Xiaomi:
+        name: Xiaomi
+        mode: Denoise
+        Denoise:
+            dataroot_GT: /131_data/datasets/Noise_dataset/IOCI/XIAOMI8/clean_png
+            dataroot_LQ: /131_data/datasets/Noise_dataset/IOCI/XIAOMI8/noisy_png
+
+
+#### network structures
+network_G:
+    which_model_G: NAFNet
+    setting:
+        width: 32
+        enc_blk_nums: [2, 2, 4, 8]
+        middle_blk_num: 12
+        dec_blk_nums: [2, 2, 2, 2]
+
+#### network structures
+network_G_trans:
+    which_model_G: NTNet
+    setting:
+        width: 16
+        enc_blk_nums: [1, 1, 1]
+        middle_blk_num: 1
+        dec_blk_nums: [1, 1, 1]
+        noise_injection_level: 100
+
+#### path
+path:
+    pretrain_model_G: ''
+    strict_load: true
+    resume_state: ~
+    root: '/131_data/dhryou/Noise_Translation'
+
+#### training settings: learning rate scheme, loss
+train:
+    optimizer: AdamW # Adam, AdamW, Lion
+    lr_G: !!float 1e-3
+    lr_scheme: TrueCosineAnnealingLR
+    beta1: 0.9
+    beta2: 0.99
+    niter: 5000
+    warmup_iter: -1 # no warm up
+    lr_steps: [200000, 400000, 500000]
+    lr_gamma: 0.5
+    eta_min: !!float 1e-5
+
+    # criterion
+    loss_type: l1
+    is_weighted: False
+    weight: 1.0
+    
+    # for wassloss
+    wass_weight: 0.05
+    spatial_freq_weight : 0.002
+    
+    use_mixup: false
+
+    manual_seed: 0
+    val_freq: !!float 5e3
+    image_log_freq: !!float 1e3
+
+#### logger
+logger:
+    print_freq: !!float 5e2
+    save_checkpoint_freq: !!float 1e3
+
+wandb:
+    project: Noise_Translation
+    resume_id: ~

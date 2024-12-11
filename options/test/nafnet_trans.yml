@@ -1,0 +1,107 @@
+name: nafnet_trans_test
+suffix: ~ # add suffix to saved images
+model: denoising
+gpu_ids: [0]
+test_noise_level: [0]
+trans: true
+
+
+datasets:
+    val_sidd:
+        name: Sidd
+        mode: Denoise
+        Denoise:
+            dataroot_GT: /131_data/datasets/Noise_dataset/sidd/val/gt
+            dataroot_LQ: /131_data/datasets/Noise_dataset/sidd/val/input
+
+    val_poly:
+        name: Poly
+        mode: Denoise
+        Denoise:
+            dataroot_GT: /131_data/datasets/Noise_dataset/PolyU/gt
+            dataroot_LQ: /131_data/datasets/Noise_dataset/PolyU/input
+
+    val_cc:
+        name: CC
+        mode: Denoise
+        Denoise:
+            dataroot_GT: /131_data/datasets/Noise_dataset/CC15/gt
+            dataroot_LQ: /131_data/datasets/Noise_dataset/CC15/input
+
+    val_highiso:
+        name: HighISO
+        mode: Denoise
+        Denoise:
+            dataroot_GT: /131_data/datasets/Noise_dataset/HighISO/clean
+            dataroot_LQ: /131_data/datasets/Noise_dataset/HighISO/noisy
+
+    val_iphone:
+        name: Iphone
+        mode: Denoise
+        Denoise:
+            dataroot_GT: /131_data/datasets/Noise_dataset/IOCI/IPHONE13/clean
+            dataroot_LQ: /131_data/datasets/Noise_dataset/IOCI/IPHONE13/noisy
+
+    val_huawei:
+        name: Huawei
+        mode: Denoise
+        Denoise:
+            dataroot_GT: /131_data/datasets/Noise_dataset/IOCI/HUAWEI_honor6X/clean
+            dataroot_LQ: /131_data/datasets/Noise_dataset/IOCI/HUAWEI_honor6X/noisy
+
+    val_oppo:
+        name: Oppo
+        mode: Denoise
+        Denoise:
+            dataroot_GT: /131_data/datasets/Noise_dataset/IOCI/OPPO_R11s/clean_png
+            dataroot_LQ: /131_data/datasets/Noise_dataset/IOCI/OPPO_R11s/noisy_png
+
+    val_sony:
+        name: Sony
+        mode: Denoise
+        Denoise:
+            dataroot_GT: /131_data/datasets/Noise_dataset/IOCI/SONY_A6500/clean_png
+            dataroot_LQ: /131_data/datasets/Noise_dataset/IOCI/SONY_A6500/noisy_png
+
+    val_Xiaomi:
+        name: Xiaomi
+        mode: Denoise
+        Denoise:
+            dataroot_GT: /131_data/datasets/Noise_dataset/IOCI/XIAOMI8/clean_png
+            dataroot_LQ: /131_data/datasets/Noise_dataset/IOCI/XIAOMI8/noisy_png
+
+    # val_NIND:
+    #     name: NIND
+    #     mode: Denoise
+    #     Denoise:
+    #         dataroot_GT: /131_data/datasets/Noise_dataset/NIND/NIND
+    #         dataroot_LQ: /131_data/datasets/Noise_dataset/NIND/NIND
+    
+#### network structures
+network_G:
+    which_model_G: NAFNet
+    setting:
+        width: 32
+        enc_blk_nums: [2, 2, 4, 8]
+        middle_blk_num: 12
+        dec_blk_nums: [2, 2, 2, 2]
+        net_bias : True
+
+
+## network structures
+network_G_trans:
+    which_model_G: NTNet
+    setting:
+        width: 16
+        enc_blk_nums: [1, 1, 1]
+        middle_blk_num: 1
+        dec_blk_nums: [1, 1, 1]
+        noise_injection_level: 100 
+
+#### path
+path:
+    pretrain_model_G: '/131_data/dhryou/Noise_translation_trained_models/nafnet_ours_pretrained.pth'
+    pretrain_model_trans: '/131_data/dhryou/Noise_translation_trained_models/NAFNet-ours-translation/models/nafnet_noise_translation.pth'
+
+    strict_load: true
+    root: '/131_data/dhryou/Noise_Translation'

@@ -1,0 +1,46 @@
+name: nafnet_test
+suffix: ~ # add suffix to saved images
+model: denoising
+gpu_ids: [0]
+test_noise_level: [0]
+trans: false
+
+
+datasets:
+ 
+    val_sidd:
+      name: Sidd
+      mode: Denoise
+      Denoise:
+        dataroot_GT: /131_data/datasets/Noise_dataset/sidd/val/gt
+        dataroot_LQ: /131_data/datasets/Noise_dataset/sidd/val/input
+
+    val_poly:
+      name: Poly
+      mode: Denoise
+      Denoise:
+        dataroot_GT: /131_data/datasets/Noise_dataset/PolyU/gt
+        dataroot_LQ: /131_data/datasets/Noise_dataset/PolyU/input
+
+    val_cc:
+        name: CC
+        mode: Denoise
+        Denoise:
+            dataroot_GT: /131_data/datasets/Noise_dataset/CC15/gt
+            dataroot_LQ: /131_data/datasets/Noise_dataset/CC15/input
+
+### network structures
+network_G:
+    which_model_G: NAFNet
+    setting:
+        width: 32
+        enc_blk_nums: [2, 2, 4, 8]
+        middle_blk_num: 12
+        dec_blk_nums: [2, 2, 2, 2]
+
+
+#### path
+path:
+    pretrain_model_G: '/131_data/dhryou/finetuned_models/nafnet_ours_pretrained.pth'
+    strict_load: true
+    root: '/131_data/dhryou/Noise_Translation'
