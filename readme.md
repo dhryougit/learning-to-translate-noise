@@ -1,7 +1,9 @@
 <!-- The official pytorch implementation of the paper **[Simple Baselines for Image Restoration (ECCV2022)](https://arxiv.org/abs/2204.04676)** -->
 
 <h1 align="center">Learning to Translate Noise for Robust Image Denoising 
+  
   (2026 CVPR Findings)
+  
 </h1>
 
 <p align="center">
